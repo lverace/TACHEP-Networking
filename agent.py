@@ -32,10 +32,10 @@ def iperf_server():
     try:
         if iperf3_options == True:  
             proc = subprocess.run(["podman", "run", "-itd", "--rm", "--name", name, "--network=host", 
-                                "networkstatic/iperf3", "-6", "-s", "-p", port, iperf3_options], stdout=subprocess.PIPE)
+                                "networkstatic/iperf3", "-s", "-p", port, iperf3_options], stdout=subprocess.PIPE)
         else:
             proc = subprocess.run(["podman", "run", "-itd", "--rm", "--name", name, "--network=host", 
-                                "networkstatic/iperf3", "-6", "-s", "-p", port], stdout=subprocess.PIPE)
+                                "networkstatic/iperf3", "-s", "-p", port], stdout=subprocess.PIPE)
             
         return f"iPerf3 container succesfully deployed on {host}\n", 201
     except Exception as e:
@@ -68,7 +68,7 @@ def iperf_client():
     try:
         if json_output == True:
             proc = subprocess.run(["podman", "run", "-it", "--rm", "--name", name, "--network=host", 
-                                "networkstatic/iperf3", "-6", "-J", "-c", server_hostname, 
+                                "networkstatic/iperf3", "-J", "-c", server_hostname, 
                                 "-p", server_port, "-P", "16", "-t", time], stdout=subprocess.PIPE)
 
             with open("Results/"+ server_hostname + "_" + socket.gethostname() + ".json", "w") as f:
@@ -76,7 +76,7 @@ def iperf_client():
 
         else:
             proc = subprocess.run(["podman", "run", "-it", "--rm", "--name", name, "--network=host", 
-                                "networkstatic/iperf3", "-6", "-c", server_hostname, 
+                                "networkstatic/iperf3", "-c", server_hostname, 
                                 "-p", server_port, "-P", "16", "-t", time], stdout=subprocess.PIPE)
 
             with open("Results/"+ server_hostname + "_" + socket.gethostname() + ".txt", "w") as f:
