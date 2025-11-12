@@ -37,7 +37,7 @@ def iperf_server():
             proc = subprocess.run(["podman", "run", "-itd", "--rm", "--name", name, "--network=host", 
                                 "networkstatic/iperf3", "-4", "-s", "-p", port], stdout=subprocess.PIPE)
             
-        return f"iPerf3 container succesfully deployed on {host}\n", 201
+        return f"iPerf3 server container with name {name} succesfully deployed on {host}\n", 201
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
@@ -51,7 +51,7 @@ def iperf_delete():
         proc = subprocess.run(["podman", "container", "stop", name], stdout=subprocess.PIPE)
 
         #return jsonify({'status': 'success'}), 201
-        return f"Container succesfully removed on {host}\n", 201
+        return f"iPerf3 container {name} succesfully removed on {host}\n", 201
 
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
@@ -82,7 +82,7 @@ def iperf_client():
             with open("Results/"+ server_hostname + "_" + socket.gethostname() + ".txt", "w") as f:
                 f.write(proc.stdout.decode())
 
-        return jsonify({'status': 'success'}), 201
+        return f"iPerf3 client container with name {name} succesfully deployed on {host}\n", 201
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
     
