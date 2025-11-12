@@ -64,6 +64,7 @@ def iperf_client():
     server_hostname = data.get('server_hostname')
     server_port = str(data.get('server_port'))
     json_output = data.get('json_output')
+    host = socket.gethostname()
 
     try:
         if json_output == True:
@@ -82,7 +83,7 @@ def iperf_client():
             with open("Results/"+ server_hostname + "_" + socket.gethostname() + ".txt", "w") as f:
                 f.write(proc.stdout.decode())
 
-        return f"iPerf3 client container with name {name} succesfully deployed on {host}\n", 201
+        return f"Test between {host} and {server_hostname} completed\n", 201
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
     
