@@ -3,6 +3,11 @@ import subprocess
 import json
 import requests
 import socket
+import argparse
+
+parser = argparse.ArgumentParser(description="Run the Flask app with a custom port.")
+parser.add_argument('--port', type=int, default=15011, help="Port number to run the Flask app on (default: 15011)")
+args = parser.parse_args()
 
 app = Flask(__name__)
 
@@ -61,7 +66,7 @@ def iperf_client():
     data = request.json
     name = data.get('name')
     time = data.get('time')
-    server_hostname = data.get('server_hostname')
+    server_address = data.get('server_address')
     server_port = str(data.get('server_port'))
     json_output = data.get('json_output')
     host = socket.gethostname()
@@ -69,21 +74,21 @@ def iperf_client():
     try:
         if json_output == True:
             proc = subprocess.run(["podman", "run", "-it", "--rm", "--name", name, "--network=host", 
-                                "networkstatic/iperf3", "-4", "-J", "-c", server_hostname, 
+                                "networkstatic/iperf3", "-4", "-J", "-c", server_address, 
                                 "-p", server_port, "-P", "16", "-t", time], stdout=subprocess.PIPE)
 
-            with open("Results/"+ server_hostname + "_" + socket.gethostname() + ".json", "w") as f:
+            with open("Results/"+ server_address + "_" + socket.gethostname() + ".json", "w") as f:
                 f.write(proc.stdout.decode())
 
         else:
             proc = subprocess.run(["podman", "run", "-it", "--rm", "--name", name, "--network=host", 
-                                "networkstatic/iperf3", "-4", "-c", server_hostname, 
+                                "networkstatic/iperf3", "-4", "-c", server_address, 
                                 "-p", server_port, "-P", "16", "-t", time], stdout=subprocess.PIPE)
 
-            with open("Results/"+ server_hostname + "_" + socket.gethostname() + ".txt", "w") as f:
+            with open("Results/"+ server_address + "_" + socket.gethostname() + ".txt", "w") as f:
                 f.write(proc.stdout.decode())
 
-        return f"Test between {host} and {server_hostname} completed\n", 201
+        return f"Test between {host} and {server_address} completed\n", 201
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
     
@@ -115,6 +120,6 @@ def send_json():
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
 if __name__ == '__main__':  
-    app.run(host='0.0.0.0', port=15011)
+    app.run(host='0.0.0.0', port=args.port)
 
 
