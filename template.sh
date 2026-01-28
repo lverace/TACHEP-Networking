@@ -23,3 +23,10 @@ curl -X POST "http://{client2_address}:{client2_agent_port}/iperf/client" -H "Co
 
 wait
 
+# Remove the iperf3 server containers
+# Note: client containers are automatically removed after test completion
+
+curl -X POST "http://{server1_address}:{server1_agent_port}/iperf/delete" -H "Content-Type: application/json" -d '{"name": "name of container to delete"}'
+curl -X POST "http://{server2_address}:{server2_agent_port}/iperf/delete" -H "Content-Type: application/json" -d '{"name": "name of container to delete"}'
+
+
