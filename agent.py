@@ -11,21 +11,7 @@ args = parser.parse_args()
 
 app = Flask(__name__)
 
-@app.route('/iperf_container', methods=['POST'])
-def iperf_container():
-    data = request.json
-    name = data.get('name')
-    port = str(data.get('port'))
-    iperf3_options = data.get('iperf3_options')
-    try:
-        proc = subprocess.run(["podman", "run", "-it", "--rm", "--name", name, "-p", port+":"+port, "networkstatic/iperf3", iperf3_options], stdout=subprocess.PIPE)
-        for line in proc.stdout.decode().split("\n"):
-            print(line)
-        return jsonify({'status': 'success'}), 201
-    except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 400
-    
-
+# Route for starting an iperf server
 @app.route('/iperf/server', methods=['POST'])
 def iperf_server():
     data = request.json
@@ -46,6 +32,7 @@ def iperf_server():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
+# Route for deleting iPerf containers
 @app.route('/iperf/delete', methods=['POST'])
 def iperf_delete():
     data = request.json
@@ -61,6 +48,7 @@ def iperf_delete():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
 
+# Route for starting iPerf client containers
 @app.route('/iperf/client', methods=['POST'])
 def iperf_client():
     data = request.json
@@ -91,7 +79,10 @@ def iperf_client():
         return f"Test between {host} and {server_address} completed\n", 201
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 400
-    
+
+
+## CURRENTLY UNUSED ROUTES
+# Route for receiving JSON files
 @app.route('/receiver', methods=["GET", "POST"])
 def receiver():
     data = request.get_json()
@@ -100,6 +91,7 @@ def receiver():
         json.dump(data, f, indent=2)
     return jsonify({"status": "ok", "received_keys": list(data.keys())})
 
+# Route for sending JSON files
 @app.route('/send_json', methods=['POST'])
 def send_json():
     data = request.json
